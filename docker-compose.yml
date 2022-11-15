@@ -1,0 +1,21 @@
+services:
+  app:
+    container_name: salary-hero
+    build: .
+    ports:
+      - ${PORT}:${PORT}
+    depends_on:
+      - db
+    volumes:
+      - .:/usr/app
+  db:
+    container_name: postgres
+    image: postgres:15 
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    

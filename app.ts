@@ -1,12 +1,9 @@
 import express, { Express, Request, Response } from 'express';
 import sequelize from './database';
+import companyRouter from './src/company/route';
 
 const app: Express = express();
 const port = process.env.PORT;
-
-app.get('/', (req: Request, res: Response) => {
-  res.send('Hello World');
-});
 
 const testConnection = async () => {
   try {
@@ -21,3 +18,5 @@ testConnection();
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
+
+app.use('/company', companyRouter);

@@ -6,3 +6,4 @@ const connectionString = `postgres://${process.env.DB_USER}:${process.env.DB_PAS
 const sequelize = new Sequelize(connectionString);
 
 export default sequelize;
+export * from 'sequelize';

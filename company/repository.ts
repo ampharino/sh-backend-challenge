@@ -5,4 +5,10 @@ export const CompanyRepository = {
     const companies = await Company.findAndCountAll();
     return companies;
   },
+  createCompany: async (newCompany: { name: string }) => {
+    await Company.create({ name: newCompany.name });
+  },
+  findCompanyByName: async (companyName: string) => {
+    return await Company.findOne({ where: { name: companyName } });
+  },
 };

@@ -7,6 +7,7 @@ export const getCompanies = async () => {
 
 export const createCompany = async (newCompany: { name: string }) => {
   if (await CompanyRepository.findCompanyByName(newCompany.name)) {
+    // TODO: Create error variable for error message
     throw new BusinessLogicError('Company with that name already exists');
   }
   return await CompanyRepository.createCompany(newCompany);

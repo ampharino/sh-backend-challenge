@@ -1,3 +1,4 @@
+import { ClientAdminRepository } from './../client-admin/repository';
 import { CompanyRepository } from './repository';
 import request from 'supertest';
 import companyRouter from './route';
@@ -66,6 +67,88 @@ describe('/company tests', () => {
       request(app)
         .post('/company')
         .send({ name: 'company a' })
+        .expect(201, done);
+    });
+  });
+  describe('POST /company/:companyId/client-admin', () => {
+    it('should return status 400 with error message if name is not string', (done) => {
+      request(app)
+        .post('/company/1/client-admin')
+        .send({ name: 123 })
+        .expect(400)
+        .expect(
+          [
+            {
+              code: 'invalid_type',
+              expected: 'string',
+              received: 'number',
+              path: ['body', 'name'],
+              message: 'Expected string, received number',
+            },
+          ],
+          done
+        );
+    });
+    it('should return status 400 with error message if companyId is not number', (done) => {
+      request(app)
+        .post('/company/dsafdsafa/client-admin')
+        .send({ name: 'John Smith' })
+        .expect(400)
+        .expect(
+          [
+            {
+              code: 'invalid_type',
+              expected: 'number',
+              received: 'nan',
+              path: ['params', 'companyId'],
+              message: 'Expected number, received nan',
+            },
+          ],
+          done
+        );
+    });
+    it('should return status 400 with error message if company does not exist', (done) => {
+      jest.spyOn(CompanyRepository, 'findCompanyById').mockResolvedValue(null);
+
+      request(app)
+        .post('/company/10/client-admin')
+        .send({ name: 'John Smith' })
+        .expect(400)
+        .expect({ message: 'Company with id 10 does not exist' }, done);
+    });
+    it('should return status 400 with error message if client admin with same name already exist for company', (done) => {
+      jest
+        .spyOn(CompanyRepository, 'findCompanyById')
+        .mockResolvedValue({} as any);
+      jest
+        .spyOn(ClientAdminRepository, 'getClientAdminByName')
+        .mockResolvedValue({} as any);
+
+      request(app)
+        .post('/company/10/client-admin')
+        .send({ name: 'John Smith' })
+        .expect(400)
+        .expect(
+          {
+            message: 'This company already has a client admin named John Smith',
+          },
+          done
+        );
+    });
+    it('should return status 201 if successfully created client admin', (done) => {
+      jest
+        .spyOn(CompanyRepository, 'findCompanyById')
+        .mockResolvedValue({} as any);
+      jest
+        .spyOn(ClientAdminRepository, 'getClientAdminByName')
+        .mockResolvedValue(null);
+      jest
+        .spyOn(ClientAdminRepository, 'createClientAdmin')
+        .mockResolvedValue();
+
+      request(app)
+        .post('/company/10/client-admin')
+        .send({ name: 'John Smith' })
         .expect(201, done);
     });
   });

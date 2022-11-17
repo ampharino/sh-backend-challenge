@@ -11,4 +11,7 @@ export const CompanyRepository = {
   findCompanyByName: async (companyName: string) => {
     return await Company.findOne({ where: { name: companyName } });
   },
+  findCompanyById: async (companyId: number) => {
+    return await Company.findByPk(companyId);
+  },
 };

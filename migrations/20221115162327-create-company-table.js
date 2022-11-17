@@ -3,21 +3,21 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    /**
-     * Add altering commands here.
-     *
-     * Example:
-     * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
-     */
-    await queryInterface.createTable('Company', {
+    await queryInterface.createTable('Companies', {
       name: {
         type: Sequelize.DataTypes.STRING,
+        unique: true,
         allowNull: false,
+      },
+      id: {
+        primaryKey: true,
+        type: Sequelize.DataTypes.INTEGER,
+        autoIncrement: true,
       },
     });
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Company');
+    await queryInterface.dropTable('Companies');
   },
 };

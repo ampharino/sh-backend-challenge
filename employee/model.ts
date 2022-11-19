@@ -8,6 +8,11 @@ const Employee = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    salary: {
+      type: DataTypes.DECIMAL,
+      allowNull: false,
+      defaultValue: 0,
+    },
     employeeId: {
       type: DataTypes.INTEGER,
       primaryKey: true,

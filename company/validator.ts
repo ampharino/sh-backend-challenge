@@ -19,6 +19,7 @@ export const CreateEmployeeSchema = z.object({
   body: z.object({
     name: z.string().trim().min(1),
     employeeId: z.number().positive(),
+    salary: z.number().nonnegative(),
   }),
   params: z.object({
     companyId: z.preprocess((a) => Number(a), z.number().positive()),
@@ -36,6 +37,7 @@ export const ImportEmployeesSchema = z.object({
     z.object({
       name: z.string().trim().min(1),
       employeeId: z.number().positive(),
+      salary: z.number().nonnegative(),
     })
   ),
   params: z.object({

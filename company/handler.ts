@@ -15,9 +15,7 @@ export const getCompaniesHandler = async (req: Request, res: Response) => {
 
 export const createCompaniesHandler = async (req: Request, res: Response) => {
   try {
-    const newCompany = CompanyValidators.CreateCompanySchema.parse({
-      body: req.body,
-    }).body;
+    const newCompany = CompanyValidators.CreateCompanySchema.parse(req).body;
     await CompanyService.createCompany(newCompany);
     res.sendStatus(201);
   } catch (error) {
@@ -63,8 +61,7 @@ export const createEmployeeHandler = async (req: Request, res: Response) => {
     const validatedRequest = CompanyValidators.CreateEmployeeSchema.parse(req);
     await CompanyService.createEmployee(
       {
-        name: validatedRequest.body.name,
-        employeeId: validatedRequest.body.employeeId,
+        ...validatedRequest.body,
         companyId: validatedRequest.params.companyId,
       },
       clientAdminId

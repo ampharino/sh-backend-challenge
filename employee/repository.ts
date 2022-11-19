@@ -2,12 +2,13 @@ import sequelize from '../database';
 import Employee from './model';
 
 export const EmployeeRepository = {
-  createEmployee: async (newCompany: {
+  createEmployee: async (newEmployee: {
     name: string;
     companyId: number;
     employeeId: number;
+    salary: number;
   }) => {
-    await Employee.create(newCompany);
+    await Employee.create(newEmployee);
   },
   findEmployeeById: async (employeeId: number, companyId: number) => {
     return await Employee.findOne({ where: { employeeId, companyId } });
@@ -16,7 +17,12 @@ export const EmployeeRepository = {
     return await Employee.findAndCountAll({ where: { companyId } });
   },
   createOrUpdateEmployees: async (
-    employees: { name: string; employeeId: number; companyId: number }[]
+    employees: {
+      salary: number;
+      name: string;
+      employeeId: number;
+      companyId: number;
+    }[]
   ) => {
     // * Unfortunately for Postgres upsert function does not return whether a record was updated or created so we have to track it ourselves
     const countPromises = employees.map((employee) =>
@@ -31,7 +37,10 @@ export const EmployeeRepository = {
 
     await sequelize.transaction(async (t) => {
       const upsertPromises = employees.map((employee) => {
-        return Employee.upsert(employee, { fields: ['name'], transaction: t });
+        return Employee.upsert(employee, {
+          fields: ['name', 'salary'],
+          transaction: t,
+        });
       });
       await Promise.all(upsertPromises);
     });

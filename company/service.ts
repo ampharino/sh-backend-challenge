@@ -40,6 +40,7 @@ export const createEmployee = async (
     name: string;
     employeeId: number;
     companyId: number;
+    salary: number;
   },
   clientAdminId: number
 ) => {
@@ -74,7 +75,7 @@ export const getEmployees = async (
 };
 
 export const importEmployees = async (
-  employees: { name: string; employeeId: number }[],
+  employees: { name: string; employeeId: number; salary: number }[],
   companyId: number,
   clientAdminId: number
 ) => {

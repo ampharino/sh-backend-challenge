@@ -161,7 +161,7 @@ describe('/company tests', () => {
     it('should return status 401 if not authenticated', (done) => {
       request(app)
         .post('/company/1/employee')
-        .send({ name: 'John Smith', employeeId: 123 })
+        .send({ name: 'John Smith', employeeId: 123, salary: 1500.5 })
         .expect(401, done);
     });
     it('should return status 403 if not authorized', (done) => {
@@ -175,7 +175,7 @@ describe('/company tests', () => {
       request(app)
         .post('/company/1/employee')
         .set('clientAdminId', '10')
-        .send({ name: 'John Smith', employeeId: 123 })
+        .send({ name: 'John Smith', employeeId: 123, salary: 1500.5 })
         .expect(403, done);
     });
     it('should return status 400 with error message if employee already exists', (done) => {
@@ -192,7 +192,7 @@ describe('/company tests', () => {
       request(app)
         .post('/company/1/employee')
         .set('clientAdminId', '10')
-        .send({ name: 'John Smith', employeeId: 123 })
+        .send({ name: 'John Smith', employeeId: 123, salary: 1500.5 })
         .expect(400)
         .expect({ message: EMPLOYEE_ALREADY_EXIST }, done);
     });
@@ -205,7 +205,7 @@ describe('/company tests', () => {
       request(app)
         .post('/company/1/employee')
         .set('clientAdminId', '10')
-        .send({ name: 'John Smith', employeeId: 123 })
+        .send({ name: 'John Smith', employeeId: 123, salary: 1500.5 })
         .expect(404, done);
     });
     it('should return status 201 if successfully created employee', (done) => {
@@ -223,7 +223,7 @@ describe('/company tests', () => {
       request(app)
         .post('/company/1/employee')
         .set('clientAdminId', '10')
-        .send({ name: 'John Smith', employeeId: 123 })
+        .send({ name: 'John Smith', employeeId: 123, salary: 1500.5 })
         .expect(201, done);
     });
   });
@@ -231,7 +231,7 @@ describe('/company tests', () => {
     it('should return status 401 if not authenticated', (done) => {
       request(app)
         .put('/company/1/employee')
-        .send([{ name: 'John Smith', employeeId: 123 }])
+        .send([{ name: 'John Smith', employeeId: 123, salary: 1500.5 }])
         .expect(401, done);
     });
     it('should return status 403 if not authorized', (done) => {
@@ -245,7 +245,7 @@ describe('/company tests', () => {
       request(app)
         .put('/company/1/employee')
         .set('clientAdminId', '10')
-        .send([{ name: 'John Smith', employeeId: 123 }])
+        .send([{ name: 'John Smith', employeeId: 123, salary: 1500.5 }])
         .expect(403, done);
     });
     it('should return status 404 with error message if company does not exist', (done) => {
@@ -257,7 +257,7 @@ describe('/company tests', () => {
       request(app)
         .put('/company/1/employee')
         .set('clientAdminId', '10')
-        .send([{ name: 'John Smith', employeeId: 123 }])
+        .send([{ name: 'John Smith', employeeId: 123, salary: 1500.5 }])
         .expect(404, done);
     });
     it('should return status 400 if has incorrect employee in import', (done) => {
@@ -265,8 +265,8 @@ describe('/company tests', () => {
         .put('/company/1/employee')
         .set('clientAdminId', '10')
         .send([
-          { name: 'John Smith', employeeId: 'dsfsdfs' },
-          { name: null, employeeId: 234 },
+          { name: 'John Smith', employeeId: 'dsfsdfs', salary: 1500.5 },
+          { name: null, employeeId: 234, salary: 2000.0 },
         ])
         .expect(400)
         .expect(
@@ -307,8 +307,8 @@ describe('/company tests', () => {
         .put('/company/1/employee')
         .set('clientAdminId', '10')
         .send([
-          { name: 'John Smith', employeeId: 123 },
-          { name: 'James Smith', employeeId: 234 },
+          { name: 'John Smith', employeeId: 123, salary: 1500.5 },
+          { name: 'James Smith', employeeId: 234, salary: 2000.0 },
         ])
         .expect(200)
         .expect({ created: 1, updated: 1 }, done);

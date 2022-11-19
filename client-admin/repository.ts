@@ -10,4 +10,9 @@ export const ClientAdminRepository = {
   getClientAdminByName: async (name: string, companyId: number) => {
     return await ClientAdmin.findOne({ where: { name, companyId } });
   },
+  getClientAdminById: async (clientAdminId: number, companyId: number) => {
+    return await ClientAdmin.findOne({
+      where: { id: clientAdminId, companyId },
+    });
+  },
 };

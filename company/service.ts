@@ -1,5 +1,6 @@
 import { ClientAdminRepository } from '../client-admin/repository';
-import { BusinessLogicError } from '../errors';
+import { EmployeeRepository } from '../employee/repository';
+import { AuthorizationError, BusinessLogicError } from '../errors';
 import { CompanyRepository } from './repository';
 
 export const getCompanies = async () => {
@@ -28,4 +29,29 @@ export const createClientAdmin = async (newClientAdmin: {
     );
   }
   await ClientAdminRepository.createClientAdmin(newClientAdmin);
+};
+
+export const createEmployee = async (
+  newEmployee: {
+    name: string;
+    employeeId: number;
+    companyId: number;
+  },
+  clientAdminId: number
+) => {
+  const { employeeId, companyId } = newEmployee;
+  if (!(await CompanyRepository.findCompanyById(companyId))) {
+    throw new BusinessLogicError(`Company with id ${companyId} does not exist`);
+  }
+  if (
+    !(await ClientAdminRepository.getClientAdminById(clientAdminId, companyId))
+  ) {
+    throw new AuthorizationError();
+  }
+  if (await EmployeeRepository.findEmployeeById(employeeId, companyId)) {
+    throw new BusinessLogicError(
+      `This company already has an employee with id ${employeeId}`
+    );
+  }
+  await EmployeeRepository.createEmployee(newEmployee);
 };

@@ -4,6 +4,7 @@ import request from 'supertest';
 import companyRouter from './route';
 import express from 'express';
 import bodyParser from 'body-parser';
+import { EmployeeRepository } from '../employee/repository';
 
 describe('/company tests', () => {
   beforeEach(jest.restoreAllMocks);
@@ -149,6 +150,80 @@ describe('/company tests', () => {
       request(app)
         .post('/company/10/client-admin')
         .send({ name: 'John Smith' })
+        .expect(201, done);
+    });
+  });
+  describe('POST /company/:companyId/employee', () => {
+    it('should return status 401 if not authenticated', (done) => {
+      request(app)
+        .post('/company/1/employee')
+        .send({ name: 'John Smith', employeeId: 123 })
+        .expect(401, done);
+    });
+    it('should return status 403 if not authorized', (done) => {
+      jest
+        .spyOn(ClientAdminRepository, 'getClientAdminById')
+        .mockResolvedValue(null);
+      jest
+        .spyOn(CompanyRepository, 'findCompanyById')
+        .mockResolvedValue({} as any);
+
+      request(app)
+        .post('/company/1/employee')
+        .set('clientAdminId', '10')
+        .send({ name: 'John Smith', employeeId: 123 })
+        .expect(403, done);
+    });
+    it('should return status 400 with error message if employee already exists', (done) => {
+      jest
+        .spyOn(ClientAdminRepository, 'getClientAdminById')
+        .mockResolvedValue({} as any);
+      jest
+        .spyOn(CompanyRepository, 'findCompanyById')
+        .mockResolvedValue({} as any);
+      jest
+        .spyOn(EmployeeRepository, 'findEmployeeById')
+        .mockResolvedValue({} as any);
+
+      request(app)
+        .post('/company/1/employee')
+        .set('clientAdminId', '10')
+        .send({ name: 'John Smith', employeeId: 123 })
+        .expect(400)
+        .expect(
+          { message: `This company already has an employee with id 123` },
+          done
+        );
+    });
+    it('should return status 400 with error message if company does not exist', (done) => {
+      jest
+        .spyOn(ClientAdminRepository, 'getClientAdminById')
+        .mockResolvedValue({} as any);
+      jest.spyOn(CompanyRepository, 'findCompanyById').mockResolvedValue(null);
+
+      request(app)
+        .post('/company/1/employee')
+        .set('clientAdminId', '10')
+        .send({ name: 'John Smith', employeeId: 123 })
+        .expect(400)
+        .expect({ message: `Company with id 1 does not exist` }, done);
+    });
+    it('should return status 201 if successfully created employee', (done) => {
+      jest
+        .spyOn(ClientAdminRepository, 'getClientAdminById')
+        .mockResolvedValue({} as any);
+      jest
+        .spyOn(CompanyRepository, 'findCompanyById')
+        .mockResolvedValue({} as any);
+      jest
+        .spyOn(EmployeeRepository, 'findEmployeeById')
+        .mockResolvedValue(null);
+      jest.spyOn(EmployeeRepository, 'createEmployee').mockResolvedValue();
+
+      request(app)
+        .post('/company/1/employee')
+        .set('clientAdminId', '10')
+        .send({ name: 'John Smith', employeeId: 123 })
         .expect(201, done);
     });
   });

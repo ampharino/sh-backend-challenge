@@ -5,8 +5,14 @@ import {
   createCompany,
   createClientAdmin,
   createEmployee,
+  getEmployees,
 } from './service';
-import { CompanySchema, ClientAdminSchema, EmployeeSchema } from './validator';
+import {
+  CreateCompanySchema,
+  CreateClientAdminSchema,
+  CreateEmployeeSchema,
+  GetEmployeesSchema,
+} from './validator';
 import { AuthorizationError, BusinessLogicError } from '../errors';
 
 export const getCompaniesHandler = async (req: Request, res: Response) => {
@@ -16,7 +22,7 @@ export const getCompaniesHandler = async (req: Request, res: Response) => {
 
 export const createCompaniesHandler = async (req: Request, res: Response) => {
   try {
-    const newCompany = CompanySchema.parse({ body: req.body }).body;
+    const newCompany = CreateCompanySchema.parse({ body: req.body }).body;
     await createCompany(newCompany);
     res.sendStatus(201);
   } catch (error) {
@@ -32,7 +38,7 @@ export const createCompaniesHandler = async (req: Request, res: Response) => {
 
 export const createClientAdminHandler = async (req: Request, res: Response) => {
   try {
-    const validatedRequest = ClientAdminSchema.parse(req);
+    const validatedRequest = CreateClientAdminSchema.parse(req);
     await createClientAdmin({
       name: validatedRequest.body.name,
       companyId: validatedRequest.params.companyId,
@@ -56,7 +62,7 @@ export const createEmployeeHandler = async (req: Request, res: Response) => {
     return;
   }
   try {
-    const validatedRequest = EmployeeSchema.parse(req);
+    const validatedRequest = CreateEmployeeSchema.parse(req);
     await createEmployee(
       {
         name: validatedRequest.body.name,
@@ -66,6 +72,29 @@ export const createEmployeeHandler = async (req: Request, res: Response) => {
       clientAdminId
     );
     res.sendStatus(201);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      res.status(400).send(error.errors);
+    } else if (error instanceof AuthorizationError) {
+      res.sendStatus(403);
+    } else if (error instanceof BusinessLogicError) {
+      res.status(400).send({ message: error.message });
+    } else {
+      res.sendStatus(500);
+    }
+  }
+};
+
+export const getEmployeesHandler = async (req: Request, res: Response) => {
+  const clientAdminId = Number(req.header('clientAdminId'));
+  if (!clientAdminId) {
+    res.sendStatus(401);
+    return;
+  }
+  try {
+    const { companyId } = GetEmployeesSchema.parse(req).params;
+    const employees = await getEmployees(companyId, clientAdminId);
+    res.status(200).json(employees);
   } catch (error) {
     if (error instanceof ZodError) {
       res.status(400).send(error.errors);

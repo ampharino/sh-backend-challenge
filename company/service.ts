@@ -55,3 +55,18 @@ export const createEmployee = async (
   }
   await EmployeeRepository.createEmployee(newEmployee);
 };
+
+export const getEmployees = async (
+  companyId: number,
+  clientAdminId: number
+) => {
+  if (!(await CompanyRepository.findCompanyById(companyId))) {
+    throw new BusinessLogicError(`Company with id ${companyId} does not exist`);
+  }
+  if (
+    !(await ClientAdminRepository.getClientAdminById(clientAdminId, companyId))
+  ) {
+    throw new AuthorizationError();
+  }
+  return await EmployeeRepository.getEmployeesForCompany(companyId);
+};

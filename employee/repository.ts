@@ -11,4 +11,7 @@ export const EmployeeRepository = {
   findEmployeeById: async (employeeId: number, companyId: number) => {
     return await Employee.findOne({ where: { employeeId, companyId } });
   },
+  getEmployeesForCompany: async (companyId: number) => {
+    return await Employee.findAndCountAll({ where: { companyId } });
+  },
 };

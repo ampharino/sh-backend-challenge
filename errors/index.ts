@@ -2,4 +2,6 @@ class BusinessLogicError extends Error {}
 
 class AuthorizationError extends Error {}
 
-export { BusinessLogicError, AuthorizationError };
+class NotFoundError extends Error {}
+
+export { BusinessLogicError, AuthorizationError, NotFoundError };

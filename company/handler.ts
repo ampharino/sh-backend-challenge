@@ -6,14 +6,20 @@ import {
   createClientAdmin,
   createEmployee,
   getEmployees,
+  importEmployees,
 } from './service';
 import {
   CreateCompanySchema,
   CreateClientAdminSchema,
   CreateEmployeeSchema,
   GetEmployeesSchema,
+  ImportEmployeesSchema,
 } from './validator';
-import { AuthorizationError, BusinessLogicError } from '../errors';
+import {
+  AuthorizationError,
+  BusinessLogicError,
+  NotFoundError,
+} from '../errors';
 
 export const getCompaniesHandler = async (req: Request, res: Response) => {
   const companies = await getCompanies();
@@ -49,6 +55,8 @@ export const createClientAdminHandler = async (req: Request, res: Response) => {
       res.status(400).send(error.errors);
     } else if (error instanceof BusinessLogicError) {
       res.status(400).send({ message: error.message });
+    } else if (error instanceof NotFoundError) {
+      res.sendStatus(404);
     } else {
       res.sendStatus(500);
     }
@@ -79,6 +87,8 @@ export const createEmployeeHandler = async (req: Request, res: Response) => {
       res.sendStatus(403);
     } else if (error instanceof BusinessLogicError) {
       res.status(400).send({ message: error.message });
+    } else if (error instanceof NotFoundError) {
+      res.sendStatus(404);
     } else {
       res.sendStatus(500);
     }
@@ -102,6 +112,37 @@ export const getEmployeesHandler = async (req: Request, res: Response) => {
       res.sendStatus(403);
     } else if (error instanceof BusinessLogicError) {
       res.status(400).send({ message: error.message });
+    } else if (error instanceof NotFoundError) {
+      res.sendStatus(404);
+    } else {
+      res.sendStatus(500);
+    }
+  }
+};
+
+export const importEmployeesHandler = async (req: Request, res: Response) => {
+  const clientAdminId = Number(req.header('clientAdminId'));
+  if (!clientAdminId) {
+    res.sendStatus(401);
+    return;
+  }
+  try {
+    const validatedRequest = ImportEmployeesSchema.parse(req);
+    const result = await importEmployees(
+      validatedRequest.body,
+      validatedRequest.params.companyId,
+      clientAdminId
+    );
+    res.status(200).json(result);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      res.status(400).send(error.errors);
+    } else if (error instanceof AuthorizationError) {
+      res.sendStatus(403);
+    } else if (error instanceof BusinessLogicError) {
+      res.status(400).send({ message: error.message });
+    } else if (error instanceof NotFoundError) {
+      res.sendStatus(404);
     } else {
       res.sendStatus(500);
     }

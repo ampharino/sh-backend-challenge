@@ -1,6 +1,10 @@
 import { ClientAdminRepository } from '../client-admin/repository';
 import { EmployeeRepository } from '../employee/repository';
-import { AuthorizationError, BusinessLogicError } from '../errors';
+import {
+  AuthorizationError,
+  BusinessLogicError,
+  NotFoundError,
+} from '../errors';
 import { CompanyRepository } from './repository';
 
 export const getCompanies = async () => {
@@ -21,7 +25,7 @@ export const createClientAdmin = async (newClientAdmin: {
 }) => {
   const { name, companyId } = newClientAdmin;
   if (!(await CompanyRepository.findCompanyById(companyId))) {
-    throw new BusinessLogicError(`Company with id ${companyId} does not exist`);
+    throw new NotFoundError();
   }
   if (await ClientAdminRepository.getClientAdminByName(name, companyId)) {
     throw new BusinessLogicError(
@@ -41,7 +45,7 @@ export const createEmployee = async (
 ) => {
   const { employeeId, companyId } = newEmployee;
   if (!(await CompanyRepository.findCompanyById(companyId))) {
-    throw new BusinessLogicError(`Company with id ${companyId} does not exist`);
+    throw new NotFoundError();
   }
   if (
     !(await ClientAdminRepository.getClientAdminById(clientAdminId, companyId))
@@ -61,7 +65,7 @@ export const getEmployees = async (
   clientAdminId: number
 ) => {
   if (!(await CompanyRepository.findCompanyById(companyId))) {
-    throw new BusinessLogicError(`Company with id ${companyId} does not exist`);
+    throw new NotFoundError();
   }
   if (
     !(await ClientAdminRepository.getClientAdminById(clientAdminId, companyId))
@@ -69,4 +73,24 @@ export const getEmployees = async (
     throw new AuthorizationError();
   }
   return await EmployeeRepository.getEmployeesForCompany(companyId);
+};
+
+export const importEmployees = async (
+  employees: { name: string; employeeId: number }[],
+  companyId: number,
+  clientAdminId: number
+) => {
+  if (!(await CompanyRepository.findCompanyById(companyId))) {
+    throw new NotFoundError();
+  }
+  if (
+    !(await ClientAdminRepository.getClientAdminById(clientAdminId, companyId))
+  ) {
+    throw new AuthorizationError();
+  }
+  const employeesToImport = employees.map((employee) => ({
+    ...employee,
+    companyId,
+  }));
+  return await EmployeeRepository.createOrUpdateEmployees(employeesToImport);
 };

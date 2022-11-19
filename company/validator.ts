@@ -30,3 +30,15 @@ export const GetEmployeesSchema = z.object({
     companyId: z.preprocess((a) => Number(a), z.number().positive()),
   }),
 });
+
+export const ImportEmployeesSchema = z.object({
+  body: z.array(
+    z.object({
+      name: z.string().trim().min(1),
+      employeeId: z.number().positive(),
+    })
+  ),
+  params: z.object({
+    companyId: z.preprocess((a) => Number(a), z.number().positive()),
+  }),
+});

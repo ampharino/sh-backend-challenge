@@ -1,20 +1,7 @@
 import { ZodError } from 'zod';
 import { Request, Response } from 'express';
-import {
-  getCompanies,
-  createCompany,
-  createClientAdmin,
-  createEmployee,
-  getEmployees,
-  importEmployees,
-} from './service';
-import {
-  CreateCompanySchema,
-  CreateClientAdminSchema,
-  CreateEmployeeSchema,
-  GetEmployeesSchema,
-  ImportEmployeesSchema,
-} from './validator';
+import * as CompanyService from './service';
+import * as CompanyValidators from './validator';
 import {
   AuthorizationError,
   BusinessLogicError,
@@ -22,14 +9,16 @@ import {
 } from '../errors';
 
 export const getCompaniesHandler = async (req: Request, res: Response) => {
-  const companies = await getCompanies();
+  const companies = await CompanyService.getCompanies();
   res.status(200).json(companies);
 };
 
 export const createCompaniesHandler = async (req: Request, res: Response) => {
   try {
-    const newCompany = CreateCompanySchema.parse({ body: req.body }).body;
-    await createCompany(newCompany);
+    const newCompany = CompanyValidators.CreateCompanySchema.parse({
+      body: req.body,
+    }).body;
+    await CompanyService.createCompany(newCompany);
     res.sendStatus(201);
   } catch (error) {
     if (error instanceof ZodError) {
@@ -44,8 +33,9 @@ export const createCompaniesHandler = async (req: Request, res: Response) => {
 
 export const createClientAdminHandler = async (req: Request, res: Response) => {
   try {
-    const validatedRequest = CreateClientAdminSchema.parse(req);
-    await createClientAdmin({
+    const validatedRequest =
+      CompanyValidators.CreateClientAdminSchema.parse(req);
+    await CompanyService.createClientAdmin({
       name: validatedRequest.body.name,
       companyId: validatedRequest.params.companyId,
     });
@@ -70,8 +60,8 @@ export const createEmployeeHandler = async (req: Request, res: Response) => {
     return;
   }
   try {
-    const validatedRequest = CreateEmployeeSchema.parse(req);
-    await createEmployee(
+    const validatedRequest = CompanyValidators.CreateEmployeeSchema.parse(req);
+    await CompanyService.createEmployee(
       {
         name: validatedRequest.body.name,
         employeeId: validatedRequest.body.employeeId,
@@ -102,8 +92,12 @@ export const getEmployeesHandler = async (req: Request, res: Response) => {
     return;
   }
   try {
-    const { companyId } = GetEmployeesSchema.parse(req).params;
-    const employees = await getEmployees(companyId, clientAdminId);
+    const { companyId } =
+      CompanyValidators.GetEmployeesSchema.parse(req).params;
+    const employees = await CompanyService.getEmployees(
+      companyId,
+      clientAdminId
+    );
     res.status(200).json(employees);
   } catch (error) {
     if (error instanceof ZodError) {
@@ -127,8 +121,8 @@ export const importEmployeesHandler = async (req: Request, res: Response) => {
     return;
   }
   try {
-    const validatedRequest = ImportEmployeesSchema.parse(req);
-    const result = await importEmployees(
+    const validatedRequest = CompanyValidators.ImportEmployeesSchema.parse(req);
+    const result = await CompanyService.importEmployees(
       validatedRequest.body,
       validatedRequest.params.companyId,
       clientAdminId

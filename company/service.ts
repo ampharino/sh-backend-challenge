@@ -3,6 +3,9 @@ import { EmployeeRepository } from '../employee/repository';
 import {
   AuthorizationError,
   BusinessLogicError,
+  CLIENT_ADMIN_ALREADY_EXIST,
+  COMPANY_ALREADY_EXIST,
+  EMPLOYEE_ALREADY_EXIST,
   NotFoundError,
 } from '../errors';
 import { CompanyRepository } from './repository';
@@ -13,8 +16,7 @@ export const getCompanies = async () => {
 
 export const createCompany = async (newCompany: { name: string }) => {
   if (await CompanyRepository.findCompanyByName(newCompany.name)) {
-    // TODO: Create error variable for error message
-    throw new BusinessLogicError('Company with that name already exists');
+    throw new BusinessLogicError(COMPANY_ALREADY_EXIST);
   }
   return await CompanyRepository.createCompany(newCompany);
 };
@@ -28,9 +30,7 @@ export const createClientAdmin = async (newClientAdmin: {
     throw new NotFoundError();
   }
   if (await ClientAdminRepository.getClientAdminByName(name, companyId)) {
-    throw new BusinessLogicError(
-      `This company already has a client admin named ${name}`
-    );
+    throw new BusinessLogicError(CLIENT_ADMIN_ALREADY_EXIST);
   }
   await ClientAdminRepository.createClientAdmin(newClientAdmin);
 };
@@ -53,9 +53,7 @@ export const createEmployee = async (
     throw new AuthorizationError();
   }
   if (await EmployeeRepository.findEmployeeById(employeeId, companyId)) {
-    throw new BusinessLogicError(
-      `This company already has an employee with id ${employeeId}`
-    );
+    throw new BusinessLogicError(EMPLOYEE_ALREADY_EXIST);
   }
   await EmployeeRepository.createEmployee(newEmployee);
 };

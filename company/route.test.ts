@@ -5,6 +5,11 @@ import companyRouter from './route';
 import express from 'express';
 import bodyParser from 'body-parser';
 import { EmployeeRepository } from '../employee/repository';
+import {
+  CLIENT_ADMIN_ALREADY_EXIST,
+  COMPANY_ALREADY_EXIST,
+  EMPLOYEE_ALREADY_EXIST,
+} from '../errors';
 
 describe('/company tests', () => {
   beforeEach(jest.restoreAllMocks);
@@ -20,7 +25,7 @@ describe('/company tests', () => {
         .post('/company')
         .send({ name: 'company a' })
         .expect(400)
-        .expect({ message: 'Company with that name already exists' }, done);
+        .expect({ message: COMPANY_ALREADY_EXIST }, done);
     });
     it('should return status 400 with validation error message if name is not a string', (done) => {
       request(app)
@@ -130,7 +135,7 @@ describe('/company tests', () => {
         .expect(400)
         .expect(
           {
-            message: 'This company already has a client admin named John Smith',
+            message: CLIENT_ADMIN_ALREADY_EXIST,
           },
           done
         );
@@ -189,10 +194,7 @@ describe('/company tests', () => {
         .set('clientAdminId', '10')
         .send({ name: 'John Smith', employeeId: 123 })
         .expect(400)
-        .expect(
-          { message: `This company already has an employee with id 123` },
-          done
-        );
+        .expect({ message: EMPLOYEE_ALREADY_EXIST }, done);
     });
     it('should return status 404 with error message if company does not exist', (done) => {
       jest

@@ -1,20 +1,16 @@
-import {
-  getCompaniesHandler,
-  createCompaniesHandler,
-  createClientAdminHandler,
-  createEmployeeHandler,
-  getEmployeesHandler,
-  importEmployeesHandler,
-} from './handler';
+import * as CompanyHandlers from './handler';
 import express from 'express';
 
 const router = express.Router();
 
-router.get('/', getCompaniesHandler);
-router.post('/', createCompaniesHandler);
-router.post('/:companyId/client-admin', createClientAdminHandler);
-router.post('/:companyId/employee', createEmployeeHandler);
-router.get('/:companyId/employee', getEmployeesHandler);
-router.put('/:companyId/employee', importEmployeesHandler);
+router.get('/', CompanyHandlers.getCompaniesHandler);
+router.post('/', CompanyHandlers.createCompaniesHandler);
+router.post(
+  '/:companyId/client-admin',
+  CompanyHandlers.createClientAdminHandler
+);
+router.post('/:companyId/employee', CompanyHandlers.createEmployeeHandler);
+router.get('/:companyId/employee', CompanyHandlers.getEmployeesHandler);
+router.put('/:companyId/employee', CompanyHandlers.importEmployeesHandler);
 
 export default router;

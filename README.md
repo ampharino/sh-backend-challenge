@@ -34,6 +34,7 @@ These routes require authorization as employee by having `employeeId` set in req
 
 ## Possible Improvements
 - Better authentication and authorization using JWT
+- Using UUID instead of integers for ids
 - Integration test that calls the database
 - API Documentation using swagger
 - Better type definitions

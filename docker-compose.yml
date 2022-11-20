@@ -1,14 +1,18 @@
 services:
   app:
     container_name: salary-hero
+    entrypoint: ['/bin/sh', './entrypoint.sh']
     build: .
     ports:
       - ${PORT}:${PORT}
     depends_on:
-      - db
+       db:
+        condition: service_healthy
     volumes:
       - .:/usr/app
       - /usr/app/node_modules
+    environment:
+      - NODE_ENV=docker
   db:
     container_name: postgres
     image: postgres:15 
@@ -19,4 +23,8 @@ services:
     environment:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
-    
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5

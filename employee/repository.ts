@@ -10,6 +10,9 @@ export const EmployeeRepository = {
   }) => {
     await Employee.create(newEmployee);
   },
+  findEmployeeByPk: async (id: number) => {
+    return await Employee.findByPk(id);
+  },
   findEmployeeById: async (employeeId: number, companyId: number) => {
     return await Employee.findOne({ where: { employeeId, companyId } });
   },

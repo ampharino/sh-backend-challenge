@@ -15,11 +15,11 @@ const Employee = sequelize.define(
     },
     employeeId: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
+      unique: 'employeeIdentity',
     },
     companyId: {
+      unique: 'employeeIdentity',
       type: DataTypes.INTEGER,
-      primaryKey: true,
       references: {
         model: Company,
         key: 'id',

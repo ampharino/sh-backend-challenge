@@ -1,6 +1,7 @@
 import express, { Express, Request, Response } from 'express';
 import sequelize from './database';
 import companyRouter from './company/route';
+import transferRequestRouter from './transfer-request/route';
 import bodyParser from 'body-parser';
 
 const app: Express = express();
@@ -22,3 +23,4 @@ app.listen(port, () => {
 
 app.use(bodyParser.json());
 app.use('/company', companyRouter);
+app.use('/transfer-request', transferRequestRouter);

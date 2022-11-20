@@ -26,7 +26,7 @@
     "zod": "^3.19.1"
   },
   "scripts": {
-    "start": "nodemon app.ts",
+    "start": "npm run migrate && nodemon app.ts",
     "test": "jest --watch",
     "migrate": "npx sequelize-cli db:migrate",
     "rollback": "npx sequelize-cli db:migrate:undo",

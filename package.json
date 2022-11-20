@@ -28,8 +28,8 @@
   "scripts": {
     "start": "npm run migrate && nodemon app.ts",
     "test": "jest --watch",
-    "migrate": "npx sequelize-cli db:migrate",
-    "rollback": "npx sequelize-cli db:migrate:undo",
-    "create:migration": "npx sequelize-cli migration:generate --name"
+    "migrate": "sequelize-cli db:migrate",
+    "rollback": "sequelize-cli db:migrate:undo",
+    "create:migration": "sequelize-cli migration:generate --name"
   }
 }

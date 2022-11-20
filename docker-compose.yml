@@ -2,6 +2,7 @@ services:
   app:
     container_name: salary-hero
     build: .
+    entrypoint: ["/bin/bash/", ./entrypoint.sh"]
     ports:
       - ${PORT}:${PORT}
     depends_on:

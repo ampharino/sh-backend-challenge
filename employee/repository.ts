@@ -43,6 +43,7 @@ export const EmployeeRepository = {
         return Employee.upsert(employee, {
           fields: ['name', 'salary'],
           transaction: t,
+          conflictFields: ['companyId', 'employeeId'],
         });
       });
       await Promise.all(upsertPromises);
